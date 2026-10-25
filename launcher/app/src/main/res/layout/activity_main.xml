@@ -175,6 +175,8 @@
                 <!-- The header texts use gravity left, not start: the launcher lays out left to right
                      (no supportsRtl), and with start a right-to-left script such as Arabic would move to the
                      right edge of these full-width lines instead of staying under the clock. -->
+                <!-- FORK (parth-nikam): a slightly brighter, tighter greeting kicker, with a touch more room
+                     below it so the clock does not crowd the greeting. -->
                 <TextView
                     android:id="@+id/greeting"
                     android:gravity="left"
@@ -183,10 +185,11 @@
                     android:singleLine="true"
                     android:ellipsize="end"
                     android:layout_marginStart="4dp"
-                    android:textColor="#8CFFFFFF"
-                    android:textSize="12sp"
+                    android:layout_marginBottom="2dp"
+                    android:textColor="#A6FFFFFF"
+                    android:textSize="13sp"
                     android:fontFamily="@string/font_medium"
-                    android:letterSpacing="0.22"
+                    android:letterSpacing="0.18"
                     android:textAllCaps="true" />
 
                 <LinearLayout
@@ -289,19 +292,20 @@
                             android:visibility="gone" />
 
                         <!-- FORK ADDITION (parth-nikam): current weather for the configured place, under the
-                             date. Shown only when weather_enabled is on and a reading has arrived. -->
+                             date. Tuned to sit with the date as one tidy supporting block: same 14sp, a little
+                             brighter than the date since it is live, matching letter-spacing. -->
                         <TextView
                             android:id="@+id/weather"
                             android:gravity="left"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="4dp"
+                            android:layout_marginTop="5dp"
                             android:singleLine="true"
                             android:ellipsize="end"
-                            android:textColor="#CCFFFFFF"
-                            android:textSize="15sp"
+                            android:textColor="#D9FFFFFF"
+                            android:textSize="14sp"
                             android:fontFamily="@string/font_medium"
-                            android:letterSpacing="0.06"
+                            android:letterSpacing="0.08"
                             android:includeFontPadding="false"
                             android:visibility="gone" />
                     </LinearLayout>

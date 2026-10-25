@@ -238,13 +238,13 @@
                             android:gravity="right"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="4dp"
+                            android:layout_marginTop="5dp"
                             android:singleLine="true"
                             android:ellipsize="end"
-                            android:textColor="#CCFFFFFF"
-                            android:textSize="15sp"
+                            android:textColor="#D9FFFFFF"
+                            android:textSize="14sp"
                             android:fontFamily="@string/font_medium"
-                            android:letterSpacing="0.06"
+                            android:letterSpacing="0.08"
                             android:includeFontPadding="false"
                             android:visibility="gone" />
                 </LinearLayout>
