@@ -1,0 +1,6 @@
+{
+  "tv": "Sony BRAVIA VU2 (BRAVIA_VU1_4K, Realtek)",
+  "os": "Google TV 14",
+  "brand": "Sony",
+  "notes": "Google TV 14 4K, 2 GB: disables Sony demo/help, Google feedback/partner-setup/calendar-sync/play-games/print/gallery, Android ad/personalization services and the Sony partner auto-installer; keeps Assistant/voice, Chromecast, firmware updates, Live TV (com.android.tv), inputs and com.sony.dtv.smartui. Stock launcher com.google.android.tvlauncher is disabled last by build-and-install after the custom launcher is Home; setupwraith did not claim HOME on this build. Wireless debugging (ADB over TLS): pair with adb, then adb tcpip 5555."
+}

@@ -184,6 +184,13 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     private boolean lunar;
     private int lunarOffset;
     private TextView stats;
+    /** FORK (parth-nikam): the header weather line, its state, and its background fetcher. Shown only while
+     *  weatherEnabled is on. See Weather.java and the INTERNET permission in the manifest. */
+    private TextView weather;
+    private boolean weatherEnabled;
+    private double weatherLat, weatherLon;
+    private HandlerThread weatherThread;
+    private volatile Handler weatherBg;
     private List<RaceWeekend.Race> raceCalendar;
     private View racePanel;
     private TextView raceKicker, raceHeadline, raceSessions;
@@ -474,6 +481,11 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         btnWifi = findViewById(R.id.btnWifi);
         shamsiDate = findViewById(R.id.shamsiDate);
         stats = findViewById(R.id.stats);
+        // FORK (parth-nikam): header weather line. Read straight from resources, as latitude/longitude are
+        // (SkyView), so it needs no change to Config's constructor. A blank or unparseable coordinate just
+        // leaves the feature off.
+        weather = findViewById(R.id.weather);
+        weatherEnabled = getResources().getBoolean(R.bool.weather_enabled) && parseWeatherCoords();
         raceCalendar = cfg.raceCalendar;
         racePanel = findViewById(R.id.racePanel);
         raceKicker = findViewById(R.id.raceKicker);
@@ -959,6 +971,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             pillsShown = true;
         }
         if (showStats) startStats();
+        if (weatherEnabled) startWeather();   // FORK (parth-nikam)
         sky.update();
         wallpaperPlayer.start();
         handler.postDelayed(minuteTick, MINUTE_MS);
@@ -1136,6 +1149,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         heroArt.animate().cancel();
         handler.removeCallbacks(minuteTick);
         stopStats();
+        stopWeather();   // FORK (parth-nikam)
         if (diya != null) diya.stop();
         cancelPendingFocusScroll();
         // Nothing of ours stays on screen over another app; an undecided prompt simply returns next time.
@@ -2011,6 +2025,62 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     }
 
     // ---- optional system stats (config.xml show_stats) --------------------------------------------
+
+    // ---- weather line (FORK, parth-nikam) --------------------------------------------------------
+    // Mirrors the stats HandlerThread pattern below: a background thread does the blocking Open-Meteo
+    // fetch, posts the result to the UI thread, and re-schedules itself every Weather.REFRESH_MS.
+    // Started in onResume (only while weatherEnabled), stopped in onPause.
+
+    /** Reads weather_latitude / weather_longitude into weatherLat/weatherLon; false if either is blank or invalid. */
+    private boolean parseWeatherCoords() {
+        String lat = getString(R.string.weather_latitude).trim();
+        String lon = getString(R.string.weather_longitude).trim();
+        if (lat.isEmpty() || lon.isEmpty()) return false;
+        try {
+            weatherLat = Double.parseDouble(lat);
+            weatherLon = Double.parseDouble(lon);
+        } catch (NumberFormatException e) {
+            return false;
+        }
+        return weatherLat >= -90 && weatherLat <= 90 && weatherLon >= -180 && weatherLon <= 180;
+    }
+
+    private void startWeather() {
+        if (weatherThread != null) return;
+        weatherThread = new HandlerThread("weather");
+        weatherThread.start();
+        Handler bg = new Handler(weatherThread.getLooper());
+        weatherBg = bg;
+        bg.post(new Runnable() {
+            @Override
+            public void run() {
+                if (weatherBg != bg) return;
+                String line;
+                try {
+                    line = Weather.now(weatherLat, weatherLon);
+                } catch (Exception e) {
+                    line = null;   // offline, a timeout, or a bad reply: leave the last line, try again next cycle
+                }
+                final String result = line;
+                handler.post(() -> {
+                    if (weatherEnabled && weather != null && weatherBg == bg && result != null) {
+                        weather.setText(result);
+                        weather.setVisibility(View.VISIBLE);
+                    }
+                });
+                if (weatherBg == bg) bg.postDelayed(this, Weather.REFRESH_MS);
+            }
+        });
+    }
+
+    private void stopWeather() {
+        if (weatherThread == null) return;
+        weatherBg.removeCallbacksAndMessages(null);
+        weatherThread.quit();
+        weatherThread = null;
+        weatherBg = null;
+        // Keep the last reading on screen while Home is backgrounded; nothing is fetched until it resumes.
+    }
 
     /** Background reader. Started only while Home is resumed and show_stats is on. */
     private HandlerThread statsThread;

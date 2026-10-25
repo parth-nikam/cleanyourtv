@@ -1,0 +1,61 @@
+# Sony BRAVIA VU2 (product BRAVIA_VU2, device BRAVIA_VU1_4K, Realtek SoC), 4K
+# Google TV 14 (Android 14, API 34), build UKR1.240726.001
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/sony-bravia-vu2/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/sony-bravia-vu2/debloat.txt com.google.android.tvlauncher
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Stock launcher: com.google.android.tvlauncher (this VU2 build ships the CLASSIC Android TV launcher
+# as Home, not launcherx, confirmed by resolve-activity). It is NOT in this list: the custom launcher is
+# installed and confirmed as Home by launcher/build-and-install.sh first, which disables the stock
+# launcher last. On Sony the stock launcher outranks set-home-activity, so it must be disabled for the
+# new launcher to get Home.
+#
+# setupwraith (com.google.android.tungsten.setupwraith) is also NOT in this list. On this build it does
+# NOT currently claim HOME (only tvlauncher + two FallbackHome placeholders do), so the stock-launcher
+# handover alone should take Home. If setupwraith ends up owning Home after the handover, add it here only
+# after checking `dumpsys wifi | grep -o 'cname=[^ ]*'` (disable.sh enforces this) and forgetting/rejoining
+# Wi-Fi if it owns the saved network.
+#
+# KEPT ON PURPOSE (owner's choices / load-bearing):
+# - Assistant & remote mic:  com.google.android.katniss (KEEP)
+# - Chromecast built-in:     com.google.android.apps.mediashell / gms (KEEP)
+# - Firmware update:         com.realtek.usbupdate and Sony update services (KEEP)
+# - Tuner / inputs:          com.realtek.dtv, com.realtek.tv.atv, com.realtek.tv.passthrough,
+#                            com.android.tv (Live Channels), all com.realtek.* overlays
+# - Input/source menu:       com.sony.dtv.smartui
+# - Remote / CEC / IP ctrl:  com.sony.dtv.sonysystemservice, com.sony.dtv.remotecontrolsettings,
+#                            com.sony.dtv.ipcontrol, com.sony.dtv.timers
+# - On-screen keyboard:      com.sony.dtv.ime.chww
+# - Play Store + Services, and all Android/Realtek core packages.
+# Already disabled from factory (left alone, NOT part of restore): com.sony.dtv.b2b.vendorprotocol,
+# com.sony.dtv.ecodashboard.
+#
+# Wait >=15 s after the last pm command and run `adb shell sync` before rebooting (Sony writes package
+# state lazily; changes made right before a reboot can be lost).
+
+# --- Batch 1: Sony demo & help ---
+com.sony.dtv.multiscreendemo             # in-store demo
+com.sony.dtv.smarthelp                   # Sony help tile
+com.sony.dtv.helpguidecontents           # on-screen manual (IManual)
+com.sony.dtv.eulaviewer                  # EULA viewer
+
+# --- Batch 2: Google reporting / setup leftovers / unused preloads ---
+com.google.android.feedback              # Google feedback reporter
+com.google.android.partnersetup          # partner setup / RLZ attribution
+com.google.android.onetimeinitializer    # runs once after first setup
+com.google.android.syncadapters.calendar # calendar sync adapter
+com.google.android.play.games            # Play Games
+com.android.printspooler                 # printing
+com.android.gallery3d                    # legacy photo viewer
+android.autoinstalls.config.Sony.BRAVIA_VU2 # Sony/Google partner auto-installs (stops promo re-pushes)
+
+# --- Batch 3: Android ad / personalization services ---
+com.android.adservices.api               # Privacy Sandbox ad services
+com.android.federatedcompute.services    # federated compute services
+com.android.ondevicepersonalization.services # on-device personalization
+
+# --- Batch 4: owner chose to disable ---
+com.google.android.backdrop              # Ambient screensaver
+com.google.android.tts                   # Google text-to-speech (no TalkBack voice without it)
+com.google.android.videos                # Play Movies & TV
