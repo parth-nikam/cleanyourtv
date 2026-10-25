@@ -77,20 +77,24 @@ public class GlassView extends View {
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
-        fill.setShader(new LinearGradient(0, 0, 0, h, 0x3DFFFFFF, 0x12FFFFFF, Shader.TileMode.CLAMP));
-        specular.setShader(new LinearGradient(0, 0, 0, h * 0.45f, 0x66FFFFFF, 0x00FFFFFF, Shader.TileMode.CLAMP));
+        // FORK (parth-nikam): a touch more body in the fill and a brighter top specular, so the focused tile
+        // looks lit from within like Apple's liquid glass rather than a flat pane.
+        fill.setShader(new LinearGradient(0, 0, 0, h, 0x4DFFFFFF, 0x14FFFFFF, Shader.TileMode.CLAMP));
+        specular.setShader(new LinearGradient(0, 0, 0, h * 0.5f, 0x80FFFFFF, 0x00FFFFFF, Shader.TileMode.CLAMP));
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
-        float inset = 6f * density;   // room for the glow
+        // FORK (parth-nikam): a wider inset gives the glow a softer, more diffuse "liquid" falloff. Cached in
+        // the hardware layer, so the extra rings cost one draw, not one per spring frame.
+        float inset = 9f * density;   // room for the glow
         rect.set(inset, inset, getWidth() - inset, getHeight() - inset);
 
         // Outer glow: thin rings across the inset, each a little fainter, so it fades out smoothly. Three wide
         // strokes left visible bands once the glow took an app's colour at a stronger alpha. The hardware layer
         // caches the result, so the rings cost one draw, not one per frame of the spring.
         if (!flat || halo) {
-            int rings = 12;
+            int rings = 16;   // FORK (parth-nikam): more rings keep the wider glow smooth, no banding
             float step = inset / rings;
             int alpha = flat ? glowAlpha / 2 : glowAlpha;
             glow.setStrokeWidth(step + 0.5f);
