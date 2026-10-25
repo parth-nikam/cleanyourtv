@@ -49,7 +49,35 @@ Turn it off by setting `weather_enabled` to `false` and rebuilding.
 - `dock_glass` = true (frosted rounded dock band) and `cinematic_home` = true with `cinematic_art` = 40
   (fills the area above the dock with the focused app's own artwork — no network, uses the local banner).
 
-### 4. Speed tuning
+### 4. Liquid-glass redesign
+One coherent "liquid glass" material across the whole home screen (no real blur — too costly on this
+Realtek GPU — so layered translucency + specular highlights + hairline rims, which read as glass at TV
+distance):
+- Top-bar pills (`pill_bg.xml`): one cohesive glass surface per state — a bright top lip easing down into a
+  translucent body, with a hairline rim. The ambient glow shows through the resting pills.
+- Focus highlight (`GlassView.java`): more body in the fill, brighter top specular, a wider softer glow so
+  the focused tile looks lit from within.
+- Dock band (`DockDecoration.java`): a three-stop glass gradient with a bright top lip and a crisper rim.
+- Tile cards (`tile_bg.xml`): icon-only tiles use the same top-lit gradient + rim, so the grid matches.
+- Header typography (`activity_main.xml`): greeting → clock → date/weather tuned into one clean hierarchy.
+
+### 5. Device-wide ad blocking (Private DNS)
+Set on the TV (not in the launcher), the network-level equivalent of what Brave does — it blocks ad and
+tracker **domains** for the whole TV (apps and the system), which is the only ad blocking possible without
+root (no sideloaded app can strip ads from inside Netflix/YouTube):
+```
+settings put global private_dns_specifier dns.adguard-dns.com
+settings put global private_dns_mode hostname
+```
+Verified: `doubleclick.net` sinkholes to 127.0.0.1 while `netflix.com`/`google.com` resolve normally. Note
+it does NOT block YouTube's in-stream ads (they serve from the video domain). Undo:
+```
+settings put global private_dns_mode off
+```
+If your router already filters DNS (Pi-hole / AdGuard Home / a filtering VPN), this bypasses it, so blocking
+on the router is the better choice there.
+
+### 6. Speed tuning
 - `focus_overshoot` = false. On this armeabi-v7a Realtek GPU the spring overshoot drove a ~1.2 s
   movement-settle and kept the launcher busy while idle. Turning it off cut the settle time ~25% and dropped
   idle launcher CPU from ~4.5% to ~0.1%. Full before/after numbers in `work/SPEED-AUDIT.md` (local, not
