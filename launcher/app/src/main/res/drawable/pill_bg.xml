@@ -1,31 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  Liquid-glass pill (FORK, parth-nikam). Each state is a layer-list: a translucent base fill, a bright
-  specular highlight band across the top third (the "glass catching light"), and a hairline rim. No real
-  blur (too expensive on this Realtek GPU) - the layered translucency + top sheen read as glass at TV
-  distance. Radius lifted to 22dp for the softer Apple lozenge.
+  Liquid-glass pill (FORK, parth-nikam). Each resting state is ONE cohesive glass surface: a single
+  top-to-bottom gradient that is brightest at the very top edge (the glass catching light) and eases down
+  into a faint translucent body, plus a hairline rim. The sheen IS the fill - not a second rounded box
+  stacked on top, which is what made the old version look like a strip floating above the pill. No real
+  blur (too costly on the Realtek GPU); the gradient + rim read as glass at TV distance. Radius 22dp.
 -->
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <!-- Focused: a bright, almost-solid glass lozenge, still with a top sheen so it reads as lit glass. -->
+    <!-- Focused: a bright, near-solid glass lozenge. One gradient from pure white at the top easing to a
+         slightly softer white, so it still reads as a lit glass surface, not flat paint. -->
     <item android:state_focused="true">
-        <layer-list>
-            <item>
-                <shape android:shape="rectangle">
-                    <solid android:color="#F2FFFFFF" />
-                    <corners android:radius="22dp" />
-                </shape>
-            </item>
-            <item android:height="20dp" android:gravity="top">
-                <shape android:shape="rectangle">
-                    <gradient
-                        android:angle="270"
-                        android:startColor="#FFFFFFFF"
-                        android:endColor="#00FFFFFF" />
-                    <corners android:radius="22dp" />
-                </shape>
-            </item>
-        </layer-list>
+        <shape android:shape="rectangle">
+            <gradient
+                android:angle="270"
+                android:startColor="#FFFFFFFF"
+                android:endColor="#F0FFFFFF" />
+            <corners android:radius="22dp" />
+        </shape>
     </item>
 
     <!-- Reorder button while reorder mode is on (focus is on the tiles then). -->
@@ -37,37 +29,18 @@
         </shape>
     </item>
 
-    <!-- Resting glass: translucent base, a specular sheen band on top, a hairline rim. -->
+    <!-- Resting glass: a single gradient, bright specular lip at the top fading through a translucent body
+         to a faint foot, with a hairline rim. One shape, so there is no inner seam. -->
     <item>
-        <layer-list>
-            <!-- Base fill: brighter at the top, fading down, like light pooling in the glass. -->
-            <item>
-                <shape android:shape="rectangle">
-                    <gradient
-                        android:angle="270"
-                        android:startColor="#3DFFFFFF"
-                        android:centerColor="#1FFFFFFF"
-                        android:endColor="#14FFFFFF" />
-                    <corners android:radius="22dp" />
-                </shape>
-            </item>
-            <!-- Specular highlight across the top third: the glass edge catching light. -->
-            <item android:height="16dp" android:gravity="top">
-                <shape android:shape="rectangle">
-                    <gradient
-                        android:angle="270"
-                        android:startColor="#5CFFFFFF"
-                        android:endColor="#00FFFFFF" />
-                    <corners android:radius="22dp" />
-                </shape>
-            </item>
-            <!-- Hairline rim: a crisp bright edge so the lozenge has a defined glass border. -->
-            <item>
-                <shape android:shape="rectangle">
-                    <stroke android:width="1dp" android:color="#4DFFFFFF" />
-                    <corners android:radius="22dp" />
-                </shape>
-            </item>
-        </layer-list>
+        <shape android:shape="rectangle">
+            <gradient
+                android:angle="270"
+                android:startColor="#4DFFFFFF"
+                android:centerColor="#1FFFFFFF"
+                android:endColor="#0FFFFFFF"
+                android:centerY="0.28" />
+            <stroke android:width="1dp" android:color="#45FFFFFF" />
+            <corners android:radius="22dp" />
+        </shape>
     </item>
 </selector>
