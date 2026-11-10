@@ -1,0 +1,43 @@
+# Xiaomi MiTV-AXSO0 (dangal; Mi TV 4C Pro / 4A Pro), Android TV 9 (SDK 28), firmware PI.6036, Amlogic,
+# 1 GB RAM, armeabi-v7a. Personal list (parth-nikam fork); the tested upstream list is debloat.txt here.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/xiaomi-mitv-axso0/debloat-parth.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/xiaomi-mitv-axso0/debloat-parth.txt com.google.android.tvlauncher
+# Everything is DISABLED, not uninstalled.
+#
+# Live TV app: com.android.tv (hidden from the grid, offered in the Inputs menu).
+# Stock launcher: com.google.android.tvlauncher. NOT in this list: build-and-install disables it last, after
+# the new launcher is confirmed as Home.
+#
+# KEPT ON PURPOSE (owner's choice): voice/Assistant (com.google.android.katniss, speech.pumpkin), Chromecast
+# (com.google.android.apps.mediashell), Mi casting (com.mitv.milinkservice, com.xiaomi.mitv.smartshare,
+# com.xiaomi.wfdsinkhelperservice), firmware updates (com.xiaomi.mitv.updateservice), all preloaded streaming apps.
+# Not on this firmware (upstream list names them): com.glance.tv, co.sensara.tv.mitv.
+# com.google.android.leanbacklauncher is re-enabled by the firmware at every boot, so it is not listed.
+# Reboot through adb's own reboot service (tv.py --reboot), not `svc power reboot`. Wait 15 s and sync first.
+
+# --- Batch 1: Xiaomi + Google telemetry
+com.miui.tv.analytics
+com.xiaomi.statistic
+com.google.android.feedback
+com.google.android.tv.bugreportsender
+
+# --- Batch 2: PatchWall, content rows, sponsored rows
+com.mitv.tvhome.atv
+com.xm.webcontent
+com.xiaomi.floatingframe
+com.google.android.tvrecommendations
+com.google.android.leanbacklauncher.recommendations
+android.autoinstalls.config.xioami.dangal   # Play auto-install of partner apps (sic, "xioami")
+com.mitv.tvhome.mitvplus                    # Mi TV+ sponsored live channels
+
+# --- Batch 3: Xiaomi background services, preloads, owner's off-list
+com.xiaomi.mitv.tvmanager                   # "TV Manager" cleaner
+com.xiaomi.mitv.handbook
+com.xiaomo.tv.milegal                       # static legal / privacy text screens
+com.xiaomi.mimusic2
+com.google.android.play.games
+com.google.android.videos                   # Play Movies & TV
+com.mitv.gallery                            # Mi Gallery; Media Player still opens USB photos
+com.google.android.backdrop                 # Ambient screensaver
+com.google.android.tts                      # Google text-to-speech
