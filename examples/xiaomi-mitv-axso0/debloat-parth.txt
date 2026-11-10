@@ -39,5 +39,5 @@ com.xiaomi.mimusic2
 com.google.android.play.games
 com.google.android.videos                   # Play Movies & TV
 com.mitv.gallery                            # Mi Gallery; Media Player still opens USB photos
-com.google.android.backdrop                 # Ambient screensaver
+# com.google.android.backdrop    # KEPT ENABLED: the TV's screensaver setting points at it; disabled, both blackouts needed a power cut
 com.google.android.tts                      # Google text-to-speech
