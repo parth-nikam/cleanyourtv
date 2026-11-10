@@ -481,11 +481,11 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         btnWifi = findViewById(R.id.btnWifi);
         shamsiDate = findViewById(R.id.shamsiDate);
         stats = findViewById(R.id.stats);
-        // FORK (parth-nikam): header weather line. Read straight from resources, as latitude/longitude are
-        // (SkyView), so it needs no change to Config's constructor. A blank or unparseable coordinate just
+        // FORK (parth-nikam): header weather line. The place comes from Config (config.xml defaults, overlaid by
+        // a per-TV config.json), so each TV can show its own city. A blank or unparseable coordinate just
         // leaves the feature off.
         weather = findViewById(R.id.weather);
-        weatherEnabled = getResources().getBoolean(R.bool.weather_enabled) && parseWeatherCoords();
+        weatherEnabled = cfg.weatherEnabled && parseWeatherCoords(cfg.weatherLatitude, cfg.weatherLongitude);
         raceCalendar = cfg.raceCalendar;
         racePanel = findViewById(R.id.racePanel);
         raceKicker = findViewById(R.id.raceKicker);
@@ -2031,10 +2031,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     // fetch, posts the result to the UI thread, and re-schedules itself every Weather.REFRESH_MS.
     // Started in onResume (only while weatherEnabled), stopped in onPause.
 
-    /** Reads weather_latitude / weather_longitude into weatherLat/weatherLon; false if either is blank or invalid. */
-    private boolean parseWeatherCoords() {
-        String lat = getString(R.string.weather_latitude).trim();
-        String lon = getString(R.string.weather_longitude).trim();
+    /** Parses the configured place into weatherLat/weatherLon; false if either is blank or invalid. */
+    private boolean parseWeatherCoords(String lat, String lon) {
         if (lat.isEmpty() || lon.isEmpty()) return false;
         try {
             weatherLat = Double.parseDouble(lat);
